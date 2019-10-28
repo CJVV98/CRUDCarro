@@ -1,0 +1,73 @@
+﻿version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Registro de Carros</title>
+    </h:head>
+    <h:body>
+          <h:form>
+              <center><h:outputText value="#{msg.titulo}" style="font-family: Arial,sans-serif;font-size: 1.1em"/></center>
+              <br></br>
+              <p:panelGrid columns="4" layout="grid">
+             
+                <h:outputText value="#{msg.campoNom}"/>
+                <p:inputText id="nombre" value="#{registroCarro.nombre}" required="true" validatorMessage="#{msg.valiNom}" requiredMessage="#{msg.campObliN}">
+                    <f:validateLength minimum="3" />
+                </p:inputText>
+                <p:message for="nombre" display="icon" />
+                <br></br>
+
+                <h:outputText value="#{msg.campoMar}"/>
+                <p:selectOneMenu  id="marca" value="#{registroCarro.marca}" style="width:125px">
+                    <f:selectItems  value="#{registroCarro.marcas}"/>
+                </p:selectOneMenu>
+                <p:message for="marca" display="icon" />
+                <br></br>
+
+                <h:outputText value="#{msg.campoMod}"/>
+                <p:datePicker id="month" maxlength="4" view="month" onkeypress="if(event.which &lt; 48 || event.which &gt; 57) return false;" required="true" value="#{registroCarro.modelo}" pattern="yyyy" yearNavigator="true" yearRange="1990:2019"  requiredMessage="#{msg.valiAno}"> 
+                    <f:validateLength minimum="4"/>
+                </p:datePicker>
+                <p:message for="month" display="icon"  />
+ 
+              </p:panelGrid>
+              
+            <p:growl id="growl" life="2000" />
+            <p:commandButton value="#{msg.b_aceptar}" update="@form" actionListener="#{registroCarro.llenarTabla()}"  process="@form"
+                             ajax="true" icon="ui-icon-plus" style="background-color: cadetblue;"/>
+            <br></br><br></br>
+            <p:panel id="tabla">
+                <p:dataTable rendered="#{not empty registroCarro.carros}" id="Datatabla" var="carro" widgetVar="carros" value="#{registroCarro.carros}"   paginator="true"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 rowsPerPageTemplate="5,10,15" rows="5" filteredValue="#{registroCarro.filtros}">
+                    <p:column headerText="#{msg.campoNom}" filterBy="#{carro.nombre}"  filterMatchMode="contains">
+                            <h:outputText value="#{carro.nombre}" />
+                        </p:column>
+
+                    <p:column headerText="#{msg.campoMar}" filterBy="#{carro.marca}"  filterMatchMode="exact">
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('carros').filter()">
+                                <f:selectItem itemLabel="Select One" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{registroCarro.marcas}" />
+                            </p:selectOneMenu>
+                        </f:facet>
+                        <h:outputText value="#{carro.marca}" />
+                        </p:column>
+
+                    <p:column headerText="#{msg.campoMod}" filterBy="#{carro.modelo}"  filterMatchMode="lte" >
+                        
+                             <f:facet name="filter">
+                                <p:spinner onchange="PF('carros').filter()" min="1999" max="2019" >
+                                    <f:converter converterId="javax.faces.Integer" />
+                                </p:spinner>
+                            </f:facet>
+                            <h:outputText value="#{carro.modelo}" />
+                        </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+    </h:body>
+</html>
